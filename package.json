@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://craftscape-voxel.netlify.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KARTHIKEYASHARMA672/craftscape.git"
+  },
   "description": "Clean, 60 FPS Minecraft-inspired 3D voxel sandbox built with Pure ES2024 JavaScript, Three.js, smooth per-vertex ambient occlusion, voxel lighting, survival crafting, smelting, mobs, and procedural Web Audio.",
   "scripts": {
     "dev": "vite",

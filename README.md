@@ -1,5 +1,6 @@
 # 🧱 CraftScape — Clean 3D Voxel Sandbox
 
+> 🌐 **Live Hosted Experience:** **[craftscape-voxel.netlify.app](https://craftscape-voxel.netlify.app)** · 📦 **Source:** **[KARTHIKEYASHARMA672/craftscape](https://github.com/KARTHIKEYASHARMA672/craftscape)**  
 > 📌 **Summary:** **CraftScape** is a clean, high-craft Minecraft-inspired 3D voxel sandbox built in Pure ES2024 JavaScript and Three.js (`0.175.0`). It features deterministic multi-biome terrain, smooth per-vertex ambient occlusion, skylight + cave torchlight propagation, Survival & Creative game modes, 2×2 / 3×3 crafting + Recipe Book, smelting furnaces, chests, primed TNT craters, articulated mobs, procedural Web Audio SFX, and IndexedDB multi-world persistence — with zero external texture/audio dependencies.
 
 ---
@@ -9,6 +10,8 @@
 | Property | Value |
 | :--- | :--- |
 | **Project Name** | CraftScape (`craftscape`) |
+| **Live Hosted URL** | [**https://craftscape-voxel.netlify.app**](https://craftscape-voxel.netlify.app) *(Production SPA on Netlify)* |
+| **Netlify Dashboard** | [**app.netlify.com/projects/craftscape-voxel**](https://app.netlify.com/projects/craftscape-voxel) *(Team `praneethsharma672`)* |
 | **Repository** | [`KARTHIKEYASHARMA672/craftscape`](https://github.com/KARTHIKEYASHARMA672/craftscape) *(Public · `main`)* |
 | **Stack** | Pure ES2024 JavaScript (`type: "module"`) · Three.js `0.175.0` · Vite `6.x` · Vitest `3.x` · ESLint `9.x` |
 | **World Scale** | `16 × 128 × 16` chunks · `SEA_LEVEL = 42` · Default `5`-chunk radius (`11×11` active grid) |

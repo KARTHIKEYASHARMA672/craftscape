@@ -1,6 +1,6 @@
 # 🧠 CraftScape — Project Memory
 
-> 📌 **Status:** Build & WebGL2 verified `2026-11-11` on `l:\pr 26(minecraft)`.
+> 📌 **Status:** Hosted on Netlify ([`craftscape-voxel.netlify.app`](https://craftscape-voxel.netlify.app)) & verified `2026-11-11` on `l:\pr 26(minecraft)`.
 
 ---
 
