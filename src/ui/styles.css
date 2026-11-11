@@ -1,0 +1,1236 @@
+/* ==========================================================================
+   CraftScape UI — Tactile Mineral & Timber Craft
+   Obsidian-slate glass (#0F1318), warm cream ink (#FBF5E6),
+   mineral emerald (#2E8B57), brass gold (#D9A441), zero gameplay clutter.
+   ========================================================================== */
+
+:root {
+  --bg-panel: rgba(15, 19, 24, 0.84);
+  --bg-panel-deep: rgba(11, 14, 18, 0.93);
+  --bg-slot: rgba(34, 41, 51, 0.85);
+  --bg-slot-hover: rgba(49, 59, 73, 0.94);
+  --border-slot: #4A5564;
+  --border-subtle: rgba(74, 85, 100, 0.55);
+  --accent-gold: #D9A441;
+  --accent-gold-hover: #E5B457;
+  --accent-emerald: #2E8B57;
+  --accent-emerald-hover: #37A267;
+  --ink-primary: #FBF5E6;
+  --ink-muted: #A7B0BC;
+  --danger: #D9463E;
+  --danger-hover: #EA574F;
+
+  --font-display: 'Silkscreen', 'Courier New', monospace;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0b0e12;
+  color: var(--ink-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+#game-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+#hud-root,
+#menu-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+#hud-root {
+  z-index: 10;
+}
+
+#menu-root {
+  z-index: 20;
+}
+
+/* ---------- Shared Mineral Surfaces & Controls ---------- */
+
+.cs-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--border-slot);
+  box-shadow:
+    inset 1px 1px 0 rgba(251, 245, 230, 0.14),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.5),
+    0 20px 54px rgba(0, 0, 0, 0.58);
+  color: var(--ink-primary);
+}
+
+.cs-bevel-inset {
+  background: rgba(10, 13, 17, 0.58);
+  border: 2px solid #2d3540;
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.5),
+    inset -1px -1px 0 rgba(251, 245, 230, 0.08);
+}
+
+.cs-title-font {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.cs-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-primary);
+  background: rgba(38, 46, 57, 0.92);
+  border: 2px solid var(--border-slot);
+  box-shadow:
+    inset 1px 1px 0 rgba(251, 245, 230, 0.16),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.cs-btn:hover:not(:disabled) {
+  background: rgba(53, 63, 77, 0.96);
+  border-color: #6b788b;
+}
+
+.cs-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.cs-btn:focus-visible,
+.cs-input:focus-visible,
+.cs-range:focus-visible,
+.cs-slot:focus-visible,
+.cs-pill:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+.cs-btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.cs-btn--primary {
+  background: var(--accent-emerald);
+  border-color: #44b577;
+  color: var(--ink-primary);
+}
+
+.cs-btn--primary:hover:not(:disabled) {
+  background: var(--accent-emerald-hover);
+  border-color: #5cd190;
+}
+
+.cs-btn--gold {
+  background: rgba(217, 164, 65, 0.18);
+  border-color: var(--accent-gold);
+  color: #ffe3a8;
+}
+
+.cs-btn--gold:hover:not(:disabled) {
+  background: rgba(217, 164, 65, 0.3);
+}
+
+.cs-btn--danger {
+  background: rgba(217, 70, 62, 0.18);
+  border-color: var(--danger);
+  color: #ffd3d0;
+}
+
+.cs-btn--danger:hover:not(:disabled) {
+  background: rgba(217, 70, 62, 0.34);
+}
+
+.cs-btn--sm {
+  min-height: 30px;
+  padding: 5px 11px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.cs-input {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink-primary);
+  background: rgba(12, 16, 21, 0.88);
+  border: 2px solid var(--border-slot);
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.45);
+  transition: border-color 0.14s ease;
+}
+
+.cs-input::placeholder {
+  color: var(--ink-muted);
+}
+
+.cs-input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.cs-segmented {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.cs-pill {
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  background: rgba(26, 32, 40, 0.85);
+  border: 2px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.cs-pill:hover {
+  color: var(--ink-primary);
+  border-color: var(--border-slot);
+}
+
+.cs-pill.is-active {
+  color: var(--ink-primary);
+  background: rgba(46, 139, 87, 0.28);
+  border-color: var(--accent-emerald);
+  box-shadow: inset 0 0 0 1px rgba(92, 209, 144, 0.25);
+}
+
+.cs-pill--gold.is-active {
+  background: rgba(217, 164, 65, 0.22);
+  border-color: var(--accent-gold);
+  color: #ffe8b8;
+}
+
+.cs-range {
+  width: 100%;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+  height: 6px;
+}
+
+/* ---------- HUD Layer ---------- */
+
+.cs-hud {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.cs-hud.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.cs-underwater-tint {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(24, 92, 158, 0.14), rgba(10, 46, 86, 0.44));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.cs-underwater-tint.is-active {
+  opacity: 1;
+}
+
+.cs-damage-vignette {
+  position: fixed;
+  inset: 0;
+  box-shadow: inset 0 0 90px rgba(217, 70, 62, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.cs-damage-vignette.is-active {
+  opacity: 1;
+}
+
+.cs-crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
+
+.cs-crosshair::before,
+.cs-crosshair::after {
+  content: '';
+  position: absolute;
+  background: #ffffff;
+}
+
+.cs-crosshair::before {
+  top: 6px;
+  left: 0;
+  width: 14px;
+  height: 2px;
+}
+
+.cs-crosshair::after {
+  top: 0;
+  left: 6px;
+  width: 2px;
+  height: 14px;
+}
+
+/* F3 Telemetry */
+
+.cs-debug {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  min-width: 265px;
+  max-width: 340px;
+  padding: 10px 12px;
+  background: rgba(15, 19, 24, 0.78);
+  border: 2px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-primary);
+  display: none;
+}
+
+.cs-debug.is-open {
+  display: block;
+}
+
+.cs-debug-title {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+}
+
+.cs-debug-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cs-debug-key {
+  color: var(--ink-muted);
+}
+
+.cs-debug-val {
+  color: var(--ink-primary);
+  text-align: right;
+}
+
+/* Toast Notifications */
+
+.cs-toasts {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.cs-toast {
+  padding: 8px 14px;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent-gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  animation: cs-toast-in 0.16s ease-out;
+}
+
+@keyframes cs-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chat & Slash Command Bar */
+
+.cs-chat-wrap {
+  position: fixed;
+  left: 16px;
+  bottom: 112px;
+  width: min(440px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.cs-chat-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 170px;
+  overflow: hidden;
+}
+
+.cs-chat-msg {
+  padding: 5px 10px;
+  background: rgba(15, 19, 24, 0.72);
+  border-left: 3px solid var(--border-slot);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-primary);
+  transition: opacity 0.35s ease;
+}
+
+.cs-chat-msg--ok {
+  border-left-color: var(--accent-emerald);
+}
+
+.cs-chat-msg--error {
+  border-left-color: var(--danger);
+  color: #ffd3d0;
+}
+
+.cs-chat-msg.is-faded {
+  opacity: 0;
+}
+
+.cs-chat-wrap.is-open .cs-chat-msg.is-faded {
+  opacity: 0.92;
+}
+
+.cs-command-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-panel-deep);
+  border: 2px solid var(--accent-gold);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+}
+
+.cs-chat-wrap.is-open .cs-command-bar {
+  display: flex;
+}
+
+.cs-command-prompt {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-gold);
+  font-size: 13px;
+}
+
+.cs-command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+}
+
+.cs-command-input::placeholder {
+  color: var(--ink-muted);
+}
+
+/* Bottom Hotbar & Survival Vitals */
+
+.cs-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.cs-held-label {
+  min-height: 20px;
+  padding: 2px 10px;
+  background: rgba(15, 19, 24, 0.72);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cs-held-label.is-visible {
+  opacity: 1;
+}
+
+.cs-vitals {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 4px;
+  gap: 16px;
+}
+
+.cs-vitals.is-hidden {
+  display: none;
+}
+
+.cs-vitals-left,
+.cs-vitals-right {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cs-vitals-right {
+  align-items: flex-end;
+}
+
+.cs-vital-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cs-vital-row.is-hidden {
+  display: none;
+}
+
+.cs-vital-svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.85));
+}
+
+.cs-hotbar {
+  display: grid;
+  grid-template-columns: repeat(9, 48px);
+  gap: 4px;
+  padding: 5px;
+  background: var(--bg-panel);
+  border: 2px solid var(--border-slot);
+  box-shadow:
+    inset 1px 1px 0 rgba(251, 245, 230, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- Inventory & Hotbar Slots ---------- */
+
+.cs-slot {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-slot);
+  border: 2px solid var(--border-slot);
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.42),
+    inset -1px -1px 0 rgba(251, 245, 230, 0.1);
+  padding: 0;
+  margin: 0;
+  color: var(--ink-primary);
+  image-rendering: pixelated;
+  transition: border-color 0.08s ease, background-color 0.08s ease, transform 0.08s ease;
+}
+
+.cs-slot--interactive {
+  cursor: pointer;
+}
+
+.cs-slot--interactive:hover {
+  background: var(--bg-slot-hover);
+  border-color: #77859a;
+}
+
+.cs-slot--selected {
+  border-color: var(--accent-gold);
+  background: rgba(52, 60, 74, 0.94);
+  box-shadow:
+    0 0 0 1px var(--accent-gold),
+    inset 0 0 12px rgba(217, 164, 65, 0.2);
+  transform: translateY(-2px);
+}
+
+.cs-slot--output {
+  width: 54px;
+  height: 54px;
+  border-color: var(--accent-gold);
+  background: rgba(42, 46, 52, 0.92);
+}
+
+.cs-slot-num {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(251, 245, 230, 0.52);
+  pointer-events: none;
+}
+
+.cs-slot-count {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink-primary);
+  text-shadow: 1px 1px 0 #090c10, -1px -1px 0 #090c10, 1px -1px 0 #090c10, -1px 1px 0 #090c10;
+  pointer-events: none;
+}
+
+.cs-durability-track {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  bottom: 3px;
+  height: 3px;
+  background: rgba(5, 7, 10, 0.88);
+  pointer-events: none;
+}
+
+.cs-durability-fill {
+  height: 100%;
+  background: var(--accent-emerald);
+}
+
+.cs-item-visual {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+  display: block;
+}
+
+/* ---------- Modal & Menu Overlays ---------- */
+
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  pointer-events: auto;
+}
+
+.cs-overlay--title {
+  background: radial-gradient(circle at 50% 42%, rgba(15, 19, 24, 0.14), rgba(10, 13, 18, 0.72));
+}
+
+.cs-overlay--dim {
+  background: rgba(9, 12, 16, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+/* Title Card */
+
+.cs-title-shell {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 32px);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.cs-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cs-brand-badge {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2e8b57 0%, #2e8b57 50%, #6b4c2d 50%, #8b5e3c 100%);
+  border: 2px solid var(--accent-gold);
+  box-shadow: inset 1px 1px 0 rgba(251, 245, 230, 0.25);
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--ink-primary);
+}
+
+.cs-brand-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--ink-primary);
+}
+
+.cs-brand-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--accent-gold);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.cs-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cs-seed-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cs-worlds-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cs-section-heading {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-world-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cs-world-empty {
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.cs-world-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(29, 35, 44, 0.85);
+  border: 1px solid var(--border-subtle);
+}
+
+.cs-world-meta {
+  min-width: 0;
+}
+
+.cs-world-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-world-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.cs-world-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cs-controls-card {
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 12px;
+  font-size: 12px;
+}
+
+.cs-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-muted);
+}
+
+.cs-kbd {
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-primary);
+  background: rgba(15, 19, 24, 0.9);
+  border: 1px solid var(--border-slot);
+}
+
+/* Pause / Settings Card */
+
+.cs-pause-card {
+  width: min(440px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cs-pause-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+}
+
+.cs-pause-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--ink-primary);
+}
+
+.cs-pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Container / Crafting / Furnace / Chest Modal */
+
+.cs-container-modal {
+  width: min(920px, 100%);
+  max-height: calc(100vh - 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.cs-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+}
+
+.cs-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-modal-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--ink-primary);
+}
+
+.cs-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.cs-modal-body {
+  display: grid;
+  grid-template-columns: auto minmax(240px, 1fr);
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.cs-modal-body--single {
+  grid-template-columns: 1fr;
+}
+
+.cs-inv-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cs-station-box {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.cs-craft-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 48px);
+  gap: 4px;
+}
+
+.cs-craft-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 4px;
+}
+
+.cs-craft-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-gold);
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+
+.cs-furnace-station {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cs-furnace-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-flame-meter {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  background: rgba(12, 16, 21, 0.85);
+  border: 1px solid var(--border-slot);
+  overflow: hidden;
+}
+
+.cs-flame-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0%;
+  background: linear-gradient(180deg, #ffd15c 0%, #e85d1a 100%);
+  transition: height 0.1s linear;
+}
+
+.cs-cook-meter {
+  width: 58px;
+  height: 14px;
+  background: rgba(12, 16, 21, 0.85);
+  border: 1px solid var(--border-slot);
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-cook-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-emerald) 0%, var(--accent-gold) 100%);
+  transition: width 0.1s linear;
+}
+
+.cs-grid-9 {
+  display: grid;
+  grid-template-columns: repeat(9, 48px);
+  gap: 4px;
+}
+
+.cs-grid-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cs-inv-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 4px 0;
+}
+
+/* Recipe Book & Creative Side Panel */
+
+.cs-assistant-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  min-width: 250px;
+  max-height: 410px;
+}
+
+.cs-assistant-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.cs-recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.cs-recipe-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: rgba(28, 34, 43, 0.85);
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+  color: var(--ink-primary);
+  cursor: pointer;
+  transition: border-color 0.1s ease, background-color 0.1s ease;
+}
+
+.cs-recipe-card:hover {
+  background: rgba(41, 50, 62, 0.92);
+  border-color: var(--border-slot);
+}
+
+.cs-recipe-card.is-craftable {
+  border-color: rgba(46, 139, 87, 0.85);
+  background: rgba(46, 139, 87, 0.16);
+}
+
+.cs-recipe-card.is-locked {
+  opacity: 0.56;
+}
+
+.cs-recipe-icon-box {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 19, 24, 0.72);
+  border: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.cs-recipe-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.cs-recipe-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.cs-recipe-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  background: rgba(15, 19, 24, 0.7);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent-gold);
+}
+
+.cs-recipe-ingredients {
+  font-size: 11px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Creative Catalog */
+
+.cs-creative-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 280px;
+  max-height: 410px;
+}
+
+.cs-creative-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cs-creative-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 48px);
+  gap: 4px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+/* Floating Cursor Stack & Tooltip */
+
+.cs-cursor-stack {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 40;
+  transform: translate(-50%, -50%);
+}
+
+.cs-cursor-stack.is-visible {
+  display: flex;
+}
+
+.cs-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  max-width: 260px;
+  padding: 6px 10px;
+  background: var(--bg-panel-deep);
+  border: 2px solid var(--accent-gold);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 45;
+  display: none;
+}
+
+.cs-tooltip.is-visible {
+  display: block;
+}
+
+.cs-tooltip-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.cs-tooltip-meta {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 820px) {
+  .cs-title-shell {
+    grid-template-columns: 1fr;
+  }
+  .cs-modal-body {
+    grid-template-columns: 1fr;
+  }
+  .cs-grid-9,
+  .cs-hotbar {
+    grid-template-columns: repeat(9, 40px);
+  }
+  .cs-slot {
+    width: 40px;
+    height: 40px;
+  }
+  .cs-item-visual {
+    width: 28px;
+    height: 28px;
+  }
+}
